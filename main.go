@@ -20,5 +20,6 @@ func main() {
 
 	app := fiber.New()
 	app.Post("/books", booksHandler.InsertBook)
+	app.Get("/books", booksHandler.RetrieveAllBooks)
 	log.Fatal(app.Listen(":8000"))
 }

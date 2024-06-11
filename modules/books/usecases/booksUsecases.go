@@ -8,6 +8,7 @@ import (
 
 type IBooksUsecase interface {
 	InsertBook(req *booksModels.Book) (*booksEntities.Book, error)
+	RetrieveAllBooks() ([]*booksEntities.Book, error)
 }
 type booksUsecase struct {
 	booksRepository booksRepositories.IBooksRepository
@@ -21,6 +22,14 @@ func NewBooksUsecase(booksRepository booksRepositories.IBooksRepository) IBooksU
 
 func (b *booksUsecase) InsertBook(req *booksModels.Book) (*booksEntities.Book, error) {
 	result, err := b.booksRepository.InsertBook(req)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (b *booksUsecase) RetrieveAllBooks() ([]*booksEntities.Book, error) {
+	result, err := b.booksRepository.RetrieveAllBooks()
 	if err != nil {
 		return nil, err
 	}

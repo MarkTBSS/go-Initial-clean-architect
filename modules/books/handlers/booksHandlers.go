@@ -8,6 +8,7 @@ import (
 
 type IBooksHandlers interface {
 	InsertBook(c *fiber.Ctx) error
+	RetrieveAllBooks(c *fiber.Ctx) error
 }
 type booksHandlers struct {
 	booksUsecase booksUsecases.IBooksUsecase
@@ -33,4 +34,14 @@ func (b *booksHandlers) InsertBook(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(fiber.StatusCreated).JSON(insertedBook)
+}
+
+func (b *booksHandlers) RetrieveAllBooks(c *fiber.Ctx) error {
+	books, err := b.booksUsecase.RetrieveAllBooks()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(books)
 }
