@@ -9,6 +9,8 @@ import (
 type IBooksUsecase interface {
 	InsertBook(req *booksModels.Book) (*booksEntities.Book, error)
 	RetrieveAllBooks() ([]*booksEntities.Book, error)
+	RetrieveBookByField(req *booksModels.Book, field string) ([]*booksEntities.Book, error)
+	RetrieveBookByDynamicField(fields map[string]string) ([]*booksEntities.Book, error)
 }
 type booksUsecase struct {
 	booksRepository booksRepositories.IBooksRepository
@@ -34,4 +36,16 @@ func (b *booksUsecase) RetrieveAllBooks() ([]*booksEntities.Book, error) {
 		return nil, err
 	}
 	return result, nil
+}
+
+func (b *booksUsecase) RetrieveBookByField(req *booksModels.Book, field string) ([]*booksEntities.Book, error) {
+	result, err := b.booksRepository.RetrieveBookByField(req, field)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (b *booksUsecase) RetrieveBookByDynamicField(fields map[string]string) ([]*booksEntities.Book, error) {
+	return b.booksRepository.RetrieveBookByDynamicField(fields)
 }

@@ -1,6 +1,8 @@
 package booksHandlers
 
 import (
+	"fmt"
+
 	booksModels "github.com/MarkTBSS/go-Initial-clean-architect/modules/books/models"
 	booksUsecases "github.com/MarkTBSS/go-Initial-clean-architect/modules/books/usecases"
 	"github.com/gofiber/fiber/v2"
@@ -9,6 +11,8 @@ import (
 type IBooksHandlers interface {
 	InsertBook(c *fiber.Ctx) error
 	RetrieveAllBooks(c *fiber.Ctx) error
+	RetrieveBookByField(c *fiber.Ctx) error
+	RetrieveBookByDynamicField(c *fiber.Ctx) error
 }
 type booksHandlers struct {
 	booksUsecase booksUsecases.IBooksUsecase
@@ -38,6 +42,49 @@ func (b *booksHandlers) InsertBook(c *fiber.Ctx) error {
 
 func (b *booksHandlers) RetrieveAllBooks(c *fiber.Ctx) error {
 	books, err := b.booksUsecase.RetrieveAllBooks()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(books)
+}
+
+func (b *booksHandlers) RetrieveBookByField(c *fiber.Ctx) error {
+	field := c.Query("field")
+	value := c.Query("value")
+	fmt.Println(field)
+	fmt.Println(value)
+	req := &booksModels.Book{}
+	switch field {
+	case "id":
+		req.Id = value
+	case "title":
+		req.Title = value
+	case "author":
+		req.Author = value
+	default:
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid field",
+		})
+	}
+	books, err := b.booksUsecase.RetrieveBookByField(req, field)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(books)
+}
+func (b *booksHandlers) RetrieveBookByDynamicField(c *fiber.Ctx) error {
+	queryParams := c.Queries()
+	req := make(map[string]string)
+	for field, value := range queryParams {
+		if value != "" {
+			req[field] = value
+		}
+	}
+	books, err := b.booksUsecase.RetrieveBookByDynamicField(req)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),

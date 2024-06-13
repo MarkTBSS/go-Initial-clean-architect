@@ -21,5 +21,7 @@ func main() {
 	app := fiber.New()
 	app.Post("/books", booksHandler.InsertBook)
 	app.Get("/books", booksHandler.RetrieveAllBooks)
+	app.Get("/books/search", booksHandler.RetrieveBookByField)
+	app.Get("/books/dynamic-search", booksHandler.RetrieveBookByDynamicField)
 	log.Fatal(app.Listen(":8000"))
 }
