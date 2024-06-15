@@ -23,5 +23,6 @@ func main() {
 	app.Get("/books", booksHandler.RetrieveAllBooks)
 	app.Get("/books/search", booksHandler.RetrieveBookByField)
 	app.Get("/books/dynamic-search", booksHandler.RetrieveBookByDynamicField)
+	app.Patch("/books/update/:id", booksHandler.UpdateBook)
 	log.Fatal(app.Listen(":8000"))
 }

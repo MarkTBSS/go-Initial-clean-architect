@@ -13,6 +13,7 @@ type IBooksHandlers interface {
 	RetrieveAllBooks(c *fiber.Ctx) error
 	RetrieveBookByField(c *fiber.Ctx) error
 	RetrieveBookByDynamicField(c *fiber.Ctx) error
+	UpdateBook(c *fiber.Ctx) error
 }
 type booksHandlers struct {
 	booksUsecase booksUsecases.IBooksUsecase
@@ -91,4 +92,22 @@ func (b *booksHandlers) RetrieveBookByDynamicField(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(books)
+}
+
+func (b *booksHandlers) UpdateBook(c *fiber.Ctx) error {
+	var req booksModels.Book
+	err := c.BodyParser(&req)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+	req.Id = c.Params("id")
+	updatedBook, err := b.booksUsecase.UpdateBook(&req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(updatedBook)
 }

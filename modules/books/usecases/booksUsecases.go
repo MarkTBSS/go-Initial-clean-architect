@@ -11,6 +11,7 @@ type IBooksUsecase interface {
 	RetrieveAllBooks() ([]*booksEntities.Book, error)
 	RetrieveBookByField(req *booksModels.Book, field string) ([]*booksEntities.Book, error)
 	RetrieveBookByDynamicField(fields map[string]string) ([]*booksEntities.Book, error)
+	UpdateBook(req *booksModels.Book) (*booksEntities.Book, error)
 }
 type booksUsecase struct {
 	booksRepository booksRepositories.IBooksRepository
@@ -48,4 +49,8 @@ func (b *booksUsecase) RetrieveBookByField(req *booksModels.Book, field string) 
 
 func (b *booksUsecase) RetrieveBookByDynamicField(fields map[string]string) ([]*booksEntities.Book, error) {
 	return b.booksRepository.RetrieveBookByDynamicField(fields)
+}
+
+func (u *booksUsecase) UpdateBook(req *booksModels.Book) (*booksEntities.Book, error) {
+	return u.booksRepository.UpdateBook(req)
 }

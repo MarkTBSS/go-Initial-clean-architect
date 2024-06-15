@@ -15,6 +15,7 @@ type IBooksRepository interface {
 	RetrieveAllBooks() ([]*booksEntities.Book, error)
 	RetrieveBookByField(req *booksModels.Book, field string) ([]*booksEntities.Book, error)
 	RetrieveBookByDynamicField(fields map[string]string) ([]*booksEntities.Book, error)
+	UpdateBook(req *booksModels.Book) (*booksEntities.Book, error)
 }
 
 type booksRepository struct {
@@ -92,4 +93,39 @@ func (b *booksRepository) RetrieveBookByDynamicField(fields map[string]string) (
 		return nil, err
 	}
 	return books, nil
+}
+
+func (b *booksRepository) UpdateBook(req *booksModels.Book) (*booksEntities.Book, error) {
+	var sets []string
+	var args []interface{}
+	i := 1
+	if req.Title != "" {
+		sets = append(sets, fmt.Sprintf("title = $%d", i))
+		args = append(args, req.Title)
+		i++
+	}
+	if req.Author != "" {
+		sets = append(sets, fmt.Sprintf("author = $%d", i))
+		args = append(args, req.Author)
+		i++
+	}
+	if len(sets) == 0 {
+		return nil, fmt.Errorf("no fields to update")
+	}
+	args = append(args, req.Id)
+	query := fmt.Sprintf("UPDATE books SET %s WHERE id = $%d", strings.Join(sets, ", "), i)
+	_, err := b.db.Exec(query, args...)
+	if err != nil {
+		log.Printf("Failed to update book: %v", err)
+		return nil, err
+	}
+	// After updating, retrieve the updated book to return it
+	updatedBookQuery := "SELECT id, title, author FROM books WHERE id = $1"
+	var updatedBook booksEntities.Book
+	err = b.db.Get(&updatedBook, updatedBookQuery, req.Id)
+	if err != nil {
+		log.Printf("Failed to retrieve updated book: %v", err)
+		return nil, err
+	}
+	return &updatedBook, nil
 }
