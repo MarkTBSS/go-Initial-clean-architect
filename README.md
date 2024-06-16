@@ -8,6 +8,9 @@ go run .
 
 [POST] localhost:8000/books
 [GET] localhost:8000/books
+[GET] localhost:8000/books/search
+[GET] localhost:8000/books/dynamic-search
+[PATCH] localhost:8000/books/update/:id
 
 Request Body
 {
