@@ -1,8 +1,6 @@
 package booksHandlers
 
 import (
-	"fmt"
-
 	booksModels "github.com/MarkTBSS/go-Initial-clean-architect/modules/books/models"
 	booksUsecases "github.com/MarkTBSS/go-Initial-clean-architect/modules/books/usecases"
 	"github.com/gofiber/fiber/v2"
@@ -54,8 +52,6 @@ func (b *booksHandlers) RetrieveAllBooks(c *fiber.Ctx) error {
 func (b *booksHandlers) RetrieveBookByField(c *fiber.Ctx) error {
 	field := c.Query("field")
 	value := c.Query("value")
-	fmt.Println(field)
-	fmt.Println(value)
 	req := &booksModels.Book{}
 	switch field {
 	case "id":
@@ -81,6 +77,8 @@ func (b *booksHandlers) RetrieveBookByDynamicField(c *fiber.Ctx) error {
 	queryParams := c.Queries()
 	req := make(map[string]string)
 	for field, value := range queryParams {
+		//fmt.Println(field)
+		//fmt.Println(value)
 		if value != "" {
 			req[field] = value
 		}

@@ -85,7 +85,8 @@ func (b *booksRepository) RetrieveBookByDynamicField(fields map[string]string) (
 		i++
 	}
 
-	query := fmt.Sprintf("SELECT id, title, author FROM books WHERE %s", strings.Join(conditions, " AND "))
+	query := fmt.Sprintf("SELECT id, title, author FROM books WHERE %s", strings.Join(conditions, " OR "))
+	//fmt.Println(query)
 	var books []*booksEntities.Book
 	err := b.db.Select(&books, query, args...)
 	if err != nil {
